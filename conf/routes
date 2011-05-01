@@ -12,6 +12,7 @@ GET      /favicon.ico                           404
 GET      /public/                               staticDir:public
 
 POST	   /ajaxlogin								      Security.ajaxlogin
+GET		/user/name								      Security.userName
 
 POST	   /user/create							      Application.handleSignup
 

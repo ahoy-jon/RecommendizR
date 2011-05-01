@@ -1,4 +1,85 @@
 #{extends 'main.html' /}
-#{set title:'Home' /}
+#{set title:'RecommendizR - Share and get stuff you like' /}
 
-#{welcome /}
+<header>
+   <h2>Share and get stuff you like !</h2>
+</header>
+
+<section id=search>
+   <form id="search-form" method="post" action="#">
+      <fieldset>
+         <legend>I'm looking for :</legend>
+         <div>
+            <label for="search-input">Stuff : </label><input type="text" id="search-input" name="search-input"
+                                                           value="${flash.search}" required/>
+            <button id="submit-button" type="submit" name="submit">Search</button>
+         </div>
+      </fieldset>
+   </form>
+
+</section>
+
+<section id="search-results">
+
+</section>
+
+<section id="recommendations">
+   <p class="not-connected">To get personnal recommendation, based on what you like, please signin or signup !</p>
+</section>
+
+<section id="recents">
+
+</section>
+
+<section id="populars">
+
+</section>
+
+<script type="text/javascript">
+   var onSuccessSearch = function (resultList) {
+      $('#result').html();
+      $('#search-results').show();
+   }
+
+   var doSearch = function () {
+      var searchText = $('#search-input').val();
+      $.ajax({
+         url: '@{Application.search()}',
+         success: onSuccessSearch,
+         data: ({'text' : searchText}),
+         type: "GET",
+         error: function() {
+            $('#search-results').html("<p class='error'>Sorry, Something bad happened. Please try another search</p>");
+         }
+      });
+   }
+
+   var withConnectedUser = function (username) {
+      $('.not-connected').hide();
+      $('.connected').fadeIn("fast");
+   };
+
+   var withoutConnectedUser = function () {
+      $('.connected').hide();
+      $('.not-connected').fadeIn("fast");
+   };
+
+   var initPage = function() {
+      $.ajax({
+         url: '/user/name',
+         success: withConnectedUser,
+         error: withoutConnectedUser
+      });
+   };
+
+   $(document).ready(function() {
+
+      initPage();
+
+      $('#submit-button').click(function(e) {
+         e.preventDefault();
+         doSearch();
+      });
+   });
+
+</script>

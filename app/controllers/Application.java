@@ -58,6 +58,10 @@ public class Application extends Controller {
       return r;
    }
 
+   public static void search(String text) {
+      renderJSON(Liked.all());
+   }
+
    public static void recommend(Category category, int howMany) throws TasteException {
       User user = Security.connectedUser();
       Jedis jedis = newConnection();
