@@ -59,14 +59,22 @@ public class Application extends Controller {
    }
 
    public static void search(String text) {
-      renderJSON(Liked.all());
+      renderJSON(Liked.findAll());
    }
 
-   public static void recommend(Category category, int howMany) throws TasteException {
+   public static void lastAdded(int howMany) {
+      renderJSON(Liked.findAll());
+   }
+
+   public static void mostLiked(int howMany) {
+      renderJSON(Liked.findAll());
+   }
+
+   public static void recommend(int howMany) throws TasteException {
       User user = Security.connectedUser();
       Jedis jedis = newConnection();
       int limit = 100;
-      FastByIDMap<PreferenceArray> usersData = usersData(jedis, category, limit);
+      FastByIDMap<PreferenceArray> usersData = usersData(jedis, null, limit);
       usersData.put(user.id, getPreferences(jedis, limit++, user.id));
       List<RecommendedItem> recommendedItems = recommend(howMany, user, usersData);
       Set<Liked> likedList = new HashSet<Liked>(recommendedItems.size());

@@ -11,7 +11,7 @@
          <legend>I'm looking for :</legend>
          <div>
             <label for="search-input">Stuff : </label><input type="text" id="search-input" name="search-input"
-                                                           value="${flash.search}" required/>
+                                                             value="${flash.search}" required/>
             <button id="submit-button" type="submit" name="submit">Search</button>
          </div>
       </fieldset>
@@ -36,50 +36,57 @@
 </section>
 
 <script type="text/javascript">
-   var onSuccessSearch = function (resultList) {
-      $('#result').html();
-      $('#search-results').show();
-   }
+   require(["jquery", "widgets/likedlist"], function($, LikedList) {
+      var onSuccessSearch = function (resultList) {
+         $('#result').html();
+         $('#search-results').show();
+      }
 
-   var doSearch = function () {
-      var searchText = $('#search-input').val();
-      $.ajax({
-         url: '@{Application.search()}',
-         success: onSuccessSearch,
-         data: ({'text' : searchText}),
-         type: "GET",
-         error: function() {
-            $('#search-results').html("<p class='error'>Sorry, Something bad happened. Please try another search</p>");
-         }
-      });
-   }
+      var doSearch = function () {
+         var searchText = $('#search-input').val();
+         $.ajax({
+            url: '@{Application.search()}',
+            success: onSuccessSearch,
+            data: ({'text' : searchText}),
+            type: "GET",
+            error: function() {
+               $('#search-results').html("<p class='error'>Sorry, Something bad happened. Please try another search</p>");
+            }
+         });
+      }
 
-   var withConnectedUser = function (username) {
-      $('.not-connected').hide();
-      $('.connected').fadeIn("fast");
-   };
+      var withConnectedUser = function (username) {
+         $('.not-connected').hide();
+         $('.connected').fadeIn("fast");
+         LikedList.Instance('recommendations', '@{Application.recommend()}', 10);
+      };
 
-   var withoutConnectedUser = function () {
-      $('.connected').hide();
-      $('.not-connected').fadeIn("fast");
-   };
+      var withoutConnectedUser = function () {
+         $('.connected').hide();
+         $('.not-connected').fadeIn("fast");
+      };
 
-   var initPage = function() {
-      $.ajax({
-         url: '/user/name',
-         success: withConnectedUser,
-         error: withoutConnectedUser
-      });
-   };
+      var initPage = function() {
+         $.ajax({
+            url: '@{Security.userName()}',
+            success: withConnectedUser,
+            error: withoutConnectedUser
+         });
+      };
 
-   $(document).ready(function() {
+      $(document).ready(function() {
 
-      initPage();
+         initPage();
 
-      $('#submit-button').click(function(e) {
-         e.preventDefault();
-         doSearch();
+         $('#submit-button').click(function(e) {
+            e.preventDefault();
+            doSearch();
+         });
+
+         LikedList.Instance('recents', '@{Application.lastAdded()}', 10);
+         LikedList.Instance('populars', '@{Application.mostLiked()}', 10);
+
+
       });
    });
-
 </script>
