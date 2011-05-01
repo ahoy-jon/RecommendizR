@@ -32,6 +32,10 @@ public class User extends Model {
     @Required @IsTrue public boolean termsOfUse;
     public String company;
 
+   public User(Long id){
+      this.id = id;
+   }
+
     public String toString() {
         return username;
     }

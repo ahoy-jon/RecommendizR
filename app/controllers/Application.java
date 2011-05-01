@@ -64,15 +64,19 @@ public class Application extends Controller {
       int limit = 100;
       FastByIDMap<PreferenceArray> usersData = usersData(jedis, category, limit);
       usersData.put(user.id, getPreferences(jedis, limit++, user.id));
-      RecommenderBuilder recommenderBuilder = new CrossingBooleanRecommenderBuilder();
-      DataModel trainingModel = new CrossingDataModelBuilder().buildDataModel(usersData);
-      Recommender recommender = recommenderBuilder.buildRecommender(trainingModel);
-      List<RecommendedItem> recommendedItems = recommender.recommend(user.id, howMany, null);
+      List<RecommendedItem> recommendedItems = recommend(howMany, user, usersData);
       Set<Liked> likedList = new HashSet<Liked>(recommendedItems.size());
       for(RecommendedItem item : recommendedItems) {
          likedList.add(findLiked(item.getItemID()));
       }
       renderJSON(likedList);
+   }
+
+   public static List<RecommendedItem> recommend(int howMany, User user, FastByIDMap<PreferenceArray> usersData) throws TasteException {
+      RecommenderBuilder recommenderBuilder = new CrossingBooleanRecommenderBuilder();
+      DataModel trainingModel = new CrossingDataModelBuilder().buildDataModel(usersData);
+      Recommender recommender = recommenderBuilder.buildRecommender(trainingModel);
+      return recommender.recommend(user.id, howMany, null);
    }
 
    private static Liked findLiked(long itemID) {
