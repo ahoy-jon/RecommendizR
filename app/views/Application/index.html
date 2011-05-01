@@ -24,7 +24,42 @@
 </section>
 
 <section id="recommendations">
-   <p class="not-connected">To get personnal recommendation, based on what you like, please signin or signup !</p>
+   <p class="not-connected">To get personnal recommendation, based on what you like, please signin with one of your
+      account :</p>
+   <section class="not-connected">
+      <!-- Simple OpenID Selector -->
+      #{form @Security.authenticateOpenId(), method:'get',id:'openid_form'}
+      <input type="hidden" name="action" value="verify"/>
+
+      <fieldset>
+
+        <a class="google openid_large_btn" href="javascript:openid.signin('google');" title="se connecter avec Google">google</a>
+        <a class="yahoo openid_large_btn" href="javascript:openid.signin('yahoo');" title="se connecter avec Yahoo">yahoo</a></div>
+
+        <noscript>
+            <p>OpenID is service that allows you to log-on to many different websites using a single indentity.
+               Find out <a href="http://openid.net/what/">more about OpenID</a> and <a
+                       href="http://openid.net/get/">how to get an OpenID enabled account</a>.</p>
+         </noscript>
+
+         #{/form}
+         <!-- /Simple OpenID Selector -->
+
+      </fieldset>
+
+      #{if flash.error}
+      <div class="errorbox">
+         <h2>Erreur</h2>
+         ${flash.error}
+      </div>
+      #{/if}
+
+      #{if flash.success}
+      <div class="successbox">
+         ${flash.success}
+      </div>
+      #{/if}
+   </section>
 </section>
 
 <section id="recents">
@@ -35,8 +70,9 @@
 
 </section>
 
+
 <script type="text/javascript">
-   require(["jquery", "widgets/likedlist"], function($, LikedList) {
+   require(["jquery", "widgets/likedlist", "openid-jquery"], function($, LikedList) {
       var onSuccessSearch = function (resultList) {
          $('#result').html();
          $('#search-results').show();
@@ -72,6 +108,9 @@
             success: withConnectedUser,
             error: withoutConnectedUser
          });
+
+         openid.init('openid_identifier');
+         openid.setDemoMode(false);
       };
 
       $(document).ready(function() {

@@ -22,21 +22,31 @@ import play.db.jpa.Model;
 @Entity
 public class User extends Model {
 
-    @Required @MinSize(6) public String username;
-    @Required public String firstname;
-    @Required public String lastname;
-    @Required @MinSize(6) public String password;
-    @Required @Equals("password") public String passwordConfirm;
-    @Required @Email public String email;
-    @Required @Equals("email") public String emailConfirm;
-    @Required @IsTrue public boolean termsOfUse;
-    public String company;
+   @Required
+   @Email
+   public String email;
 
-   public User(Long id){
+   public User(Long id) {
+      super();
       this.id = id;
    }
 
-    public String toString() {
-        return username;
-    }
+    public User(String email) {
+      super();
+      this.email = email;
+   }
+
+   public String toString() {
+      return email;
+   }
+
+   /**
+    * Recherche par email.
+    */
+   public static User findByMail(String mail) {
+      if (mail == null) {
+         return null;
+      }
+      return User.find("from User z where email=:mail").bind("mail", mail.trim().toLowerCase()).first();
+   }
 }

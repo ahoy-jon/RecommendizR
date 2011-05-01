@@ -59,6 +59,7 @@ public class Application extends Controller {
    }
 
    public static void search(String text) {
+      // TODO : need Lucene or Solr here
       renderJSON(Liked.findAll());
    }
 
@@ -122,32 +123,9 @@ public class Application extends Controller {
       return preferenceArray;
    }
 
-   public static void handleSignup(User user) {
-      if (!validation.valid(user).ok) {
-         boolean userAlreadyExists = userAlreadyExists(user);
-         render("@signupWithErrors", user, userAlreadyExists);
-      } else {
-         createUser(user);
-      }
-   }
-
-   static void createUser(User user) {
-      // TODO : send an email.
-      boolean userAlreadyExists = userAlreadyExists(user);
-      if (userAlreadyExists) {
-         render("@signupWithErrors", user, userAlreadyExists);
-      }
-      user.password = Crypto.passwordHash(user.password);
-      user.passwordConfirm = Crypto.passwordHash(user.passwordConfirm);
-      user.save();
-      Jedis jedis = newConnection();
-      jedis.sadd("users", String.valueOf(user.id));
-      Security.connect(user, false);
-      render(user);
-   }
 
    protected static boolean userAlreadyExists(User user) {
-      return (null != Security.findUser(user.username));
+      return (null != Security.findUser(user.email));
    }
 
 }
