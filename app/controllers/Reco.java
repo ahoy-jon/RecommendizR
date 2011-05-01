@@ -44,6 +44,16 @@ public class Reco extends Controller {
       jedis.hdel("l" + likedId, "user:u" + user.id);
    }
 
+   public static boolean switchlike(Long likedId) {
+      if (isLiked(likedId)) {
+         unlike(likedId);
+         return false;
+      } else {
+         like(likedId);
+         return true;
+      }
+   }
+
    public static void addLiked(Liked liked) {
       liked.save();
       like(liked.id);
@@ -65,8 +75,11 @@ public class Reco extends Controller {
       usersData.put(user.id, getPreferences(jedis, trainUsersLimit++, user.id));
       List<RecommendedItem> recommendedItems = _internalRecommend(limit, user, usersData);
       Set<Liked> likedList = new HashSet<Liked>(recommendedItems.size());
-      for(RecommendedItem item : recommendedItems) {
-         likedList.add(findLiked(item.getItemID()));
+      for (RecommendedItem item : recommendedItems) {
+         Liked liked =findLiked(item.getItemID());
+         if(liked!=null){
+            likedList.add(liked);
+         }
       }
       renderJSON(likedList);
    }

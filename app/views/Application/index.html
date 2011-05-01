@@ -22,41 +22,46 @@
 
 </section>
 
-<section id="search-results"></section>
+<section><h4>Search results :</h4><div id="search-results"></div></section>
 
-<section id="recommendations">
-   <p class="not-connected">To get personnal recommendation, based on what you like, please signin with one of your
-      account :</p>
-   <section class="not-connected">
-      <!-- Simple OpenID Selector -->
-      #{form @Security.authenticateOpenId(), method:'get',id:'openid_form'}
-      <input type="hidden" name="action" value="verify"/>
+<section>
+   <h4>Stuff you should like :</h4>
 
-      <fieldset>
+   <div id="recommendations">
+      <p class="not-connected">To get personnal recommendation, based on what you like, please signin with one of your
+         account :</p>
+      <section class="not-connected">
+         <!-- Simple OpenID Selector -->
+         #{form @Security.authenticateOpenId(), method:'get',id:'openid_form'}
+         <input type="hidden" name="action" value="verify"/>
 
-         <a class="google openid_large_btn" href="javascript:openid.signin('google');" title="se connecter avec Google">google</a>
-         <a class="yahoo openid_large_btn" href="javascript:openid.signin('yahoo');" title="se connecter avec Yahoo">yahoo</a></div>
+         <fieldset>
 
-         <noscript>
-            <p>OpenID is service that allows you to log-on to many different websites using a single indentity.
-               Find out <a href="http://openid.net/what/">more about OpenID</a> and <a
-                       href="http://openid.net/get/">how to get an OpenID enabled account</a>.</p>
-         </noscript>
+            <a class="google openid_large_btn" href="javascript:openid.signin('google');"
+               title="se connecter avec Google">google</a>
+            <a class="yahoo openid_large_btn" href="javascript:openid.signin('yahoo');" title="se connecter avec Yahoo">yahoo</a>
+
+            <noscript>
+               <p>OpenID is service that allows you to log-on to many different websites using a single indentity.
+                  Find out <a href="http://openid.net/what/">more about OpenID</a> and <a
+                          href="http://openid.net/get/">how to get an OpenID enabled account</a>.</p>
+            </noscript>
 
 
-         #{if flash.error}
-         <div class="errorbox">
-            <h2>Erreur</h2>
-            ${flash.error}
-         </div>
-         #{/if}
-      </fieldset>
-      #{/form}
-   </section>
+            #{if flash.error}
+            <div class="errorbox">
+               <h2>Erreur</h2>
+               ${flash.error}
+            </div>
+            #{/if}
+         </fieldset>
+         #{/form}
+      </section>
+   </div>
 </section>
 
-<section id="recents"></section>
-<section id="populars"></section>
+<section><h4>Recent stuff :</h4><div id="recents"></div></section>
+<section><h4>Popular stuff :</h4><div id="populars"></div></section>
 
 <section class="connected" id="add-liked">
    #{form @Reco.addLiked(), ,id:'add-liked-form'}
@@ -68,7 +73,7 @@
                 value="${flash.addLikedName}" required/>
          <label for="add-liked-input-description">Description : </label>
          <input type="text" id="add-liked-input-description" name="add-liked-input-description"
-                        value="${flash.addLikeddescription}" required/>
+                value="${flash.addLikeddescription}" required/>
          <button id="add-liked-button" type="submit" name="submit">Add</button>
       </div>
       #{if flash.addLikedError}
@@ -89,7 +94,7 @@
          $('#username-welcome').html(username);
          $('.not-connected').hide();
          $('.connected').fadeIn("fast");
-         LikedList.Instance('recommendations', '@{Reco.recommend()}', {limit:10});
+         LikedList.Instance('recommendations', '@{Reco.recommend()}', {limit:10}, '@{Reco.isLiked()}', '@{Reco.switchlike()}');
          LikedAddBox.Instance('add-liked', '@{Reco.addLiked()}');
       };
 
@@ -116,11 +121,11 @@
          $('#search-button').click(function(e) {
             e.preventDefault();
             var searchText = $('#search-input').val();
-            LikedList.Instance('search-results', '@{Application.search()}', {limit:10,text: searchText});
+            LikedList.Instance('search-results', '@{Application.search()}', {limit:10,text: searchText}, '@{Reco.isLiked()}', '@{Reco.switchlike()}');
          });
 
-         LikedList.Instance('recents', '@{Application.lastAdded()}', {limit:10});
-         LikedList.Instance('populars', '@{Application.mostLiked()}', {limit:10});
+         LikedList.Instance('recents', '@{Application.lastAdded()}', {limit:10}, '@{Reco.isLiked()}', '@{Reco.switchlike()}');
+         LikedList.Instance('populars', '@{Application.mostLiked()}', {limit:10}, '@{Reco.isLiked()}', '@{Reco.switchlike()}');
 
       });
    });
