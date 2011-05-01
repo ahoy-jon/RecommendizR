@@ -19,7 +19,7 @@ POST	   /user/create							      Application.handleSignup
 # Secure routes
 GET		/login			                        Secure.login
 POST     /login                                 Secure.authenticate
-GET      /logout                                Secure.logout
+GET      /logout         						      Security.logout
 
 # Catch all
 *        /{controller}/{action}                 {controller}.{action}

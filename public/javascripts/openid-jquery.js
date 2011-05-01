@@ -76,12 +76,7 @@ var openid = {
    submit: function() {
       var url = openid.provider_url;
       if (url) {
-         url = url.replace('{username}', $('#openid_username').val());
          openid.setOpenIdUrl(url);
-      }
-      if (openid.demo) {
-         alert(openid.demo_text + "\r\n" + document.getElementById(openid.input_id).value);
-         return false;
       }
       return true;
    },

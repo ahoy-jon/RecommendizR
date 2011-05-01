@@ -2,6 +2,9 @@
 #{set title:'RecommendizR - Share and get stuff you like' /}
 
 <header>
+   <div class="connected" id="header-welcome">
+      You are connected with <span id="username-welcome"></span>. <a href='@{Security.logout()}'>logout</a>
+   </div>
    <h2>Share and get stuff you like !</h2>
 </header>
 
@@ -33,32 +36,24 @@
 
       <fieldset>
 
-        <a class="google openid_large_btn" href="javascript:openid.signin('google');" title="se connecter avec Google">google</a>
-        <a class="yahoo openid_large_btn" href="javascript:openid.signin('yahoo');" title="se connecter avec Yahoo">yahoo</a></div>
+         <a class="google openid_large_btn" href="javascript:openid.signin('google');" title="se connecter avec Google">google</a>
+         <a class="yahoo openid_large_btn" href="javascript:openid.signin('yahoo');" title="se connecter avec Yahoo">yahoo</a></div>
 
-        <noscript>
+         <noscript>
             <p>OpenID is service that allows you to log-on to many different websites using a single indentity.
                Find out <a href="http://openid.net/what/">more about OpenID</a> and <a
                        href="http://openid.net/get/">how to get an OpenID enabled account</a>.</p>
          </noscript>
 
          #{/form}
-         <!-- /Simple OpenID Selector -->
 
+         #{if flash.error}
+         <div class="errorbox">
+            <h2>Erreur</h2>
+            ${flash.error}
+         </div>
+         #{/if}
       </fieldset>
-
-      #{if flash.error}
-      <div class="errorbox">
-         <h2>Erreur</h2>
-         ${flash.error}
-      </div>
-      #{/if}
-
-      #{if flash.success}
-      <div class="successbox">
-         ${flash.success}
-      </div>
-      #{/if}
    </section>
 </section>
 
@@ -92,6 +87,7 @@
       }
 
       var withConnectedUser = function (username) {
+         $('#username-welcome').html(username);
          $('.not-connected').hide();
          $('.connected').fadeIn("fast");
          LikedList.Instance('recommendations', '@{Application.recommend()}', 10);
@@ -124,7 +120,6 @@
 
          LikedList.Instance('recents', '@{Application.lastAdded()}', 10);
          LikedList.Instance('populars', '@{Application.mostLiked()}', 10);
-
 
       });
    });

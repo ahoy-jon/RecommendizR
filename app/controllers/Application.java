@@ -2,8 +2,6 @@ package controllers;
 
 import static Utils.Redis.newConnection;
 
-import play.*;
-import play.libs.Crypto;
 import play.mvc.*;
 
 import java.util.*;
@@ -19,7 +17,6 @@ import org.apache.mahout.cf.taste.recommender.Recommender;
 
 import models.*;
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisShardInfo;
 import services.CrossingBooleanRecommenderBuilder;
 import services.CrossingDataModelBuilder;
 
@@ -71,13 +68,13 @@ public class Application extends Controller {
       renderJSON(Liked.findAll());
    }
 
-   public static void recommend(int howMany) throws TasteException {
+   public static void recommend(int limit) throws TasteException {
       User user = Security.connectedUser();
       Jedis jedis = newConnection();
-      int limit = 100;
-      FastByIDMap<PreferenceArray> usersData = usersData(jedis, null, limit);
-      usersData.put(user.id, getPreferences(jedis, limit++, user.id));
-      List<RecommendedItem> recommendedItems = recommend(howMany, user, usersData);
+      int trainUsersLimit = 100;
+      FastByIDMap<PreferenceArray> usersData = usersData(jedis, null, trainUsersLimit);
+      usersData.put(user.id, getPreferences(jedis, trainUsersLimit++, user.id));
+      List<RecommendedItem> recommendedItems = _internalRecommend(limit, user, usersData);
       Set<Liked> likedList = new HashSet<Liked>(recommendedItems.size());
       for(RecommendedItem item : recommendedItems) {
          likedList.add(findLiked(item.getItemID()));
@@ -85,7 +82,7 @@ public class Application extends Controller {
       renderJSON(likedList);
    }
 
-   public static List<RecommendedItem> recommend(int howMany, User user, FastByIDMap<PreferenceArray> usersData) throws TasteException {
+   public static List<RecommendedItem> _internalRecommend(int howMany, User user, FastByIDMap<PreferenceArray> usersData) throws TasteException {
       RecommenderBuilder recommenderBuilder = new CrossingBooleanRecommenderBuilder();
       DataModel trainingModel = new CrossingDataModelBuilder().buildDataModel(usersData);
       Recommender recommender = recommenderBuilder.buildRecommender(trainingModel);

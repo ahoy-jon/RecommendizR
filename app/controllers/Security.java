@@ -12,8 +12,7 @@ import redis.clients.jedis.Jedis;
 
 public class Security extends Secure.Security {
 
-    /**
-    * Réalise l'authentification.
+   /**
     * Le parametre action ne sert à rien ?
     */
    public static void authenticateOpenId(String action, String openid_identifier) {
@@ -21,7 +20,7 @@ public class Security extends Secure.Security {
          OpenID.UserInfo verifiedUser = OpenID.getVerifiedID();
          if (verifiedUser == null) {
             flash.error("Erreur OpenID generique");
-            forbidden("Erreur OpenID generique");
+            Application.index();
          }
 
          String userEmail = verifiedUser.extensions.get("email");
@@ -30,7 +29,7 @@ public class Security extends Secure.Security {
                     " Vous devez authoriser le domaine recommendizr.com à accéder à votre email pour vous authentifier.";
             flash.error(errorMessage);
             Logger.info(errorMessage);
-            forbidden(errorMessage);
+            Application.index();
          }
 
          User user = User.findByMail(userEmail);
@@ -44,22 +43,22 @@ public class Security extends Secure.Security {
 
          connect(user, true);
 
-         renderText(user.email);
+         Application.index();
 
       } else {
          if (openid_identifier == null) {
             flash.error("Param openid_identifier is null");
-            forbidden("Param openid_identifier is null");
+            Application.index();
          }
          if (openid_identifier.trim().isEmpty()) {
             flash.error("Param openid_identifier is empty");
-            forbidden("Param openid_identifier is empty");
+            Application.index();
          }
 
          // Verify the id
          if (!OpenID.id(openid_identifier).required("email", "http://axschema.org/contact/email").verify()) {
             flash.put("error", "Impossible de s'authentifier avec l'URL utilisée.");
-            forbidden("Impossible de s'authentifier avec l'URL utilisée.");
+            Application.index();
          }
       }
    }
@@ -67,7 +66,6 @@ public class Security extends Secure.Security {
    public static void logout() throws Throwable {
       session.clear();
       response.removeCookie("rememberme");
-      flash.success("secure.logout");
       Application.index();
    }
 
