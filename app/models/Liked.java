@@ -12,11 +12,11 @@ import play.db.jpa.Model;
 @Entity
 public class Liked extends Model {
 
-    @Required public Category category;
+    public Category category;
     @Required @MinSize(3) public String name;
     @Required public String description;
-    @Required @MinSize(4) public String usefullFor;
-    @Required @MinSize(4) public String usefullWhen;
+    @MinSize(4) public String usefullFor;
+    @MinSize(4) public String usefullWhen;
 
     public String toString() {
         return name;

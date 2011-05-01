@@ -15,16 +15,14 @@
          <div>
             <label for="search-input">Stuff : </label><input type="text" id="search-input" name="search-input"
                                                              value="${flash.search}" required/>
-            <button id="submit-button" type="submit" name="submit">Search</button>
+            <button id="search-button" type="submit" name="submit">Search</button>
          </div>
       </fieldset>
    </form>
 
 </section>
 
-<section id="search-results">
-
-</section>
+<section id="search-results"></section>
 
 <section id="recommendations">
    <p class="not-connected">To get personnal recommendation, based on what you like, please signin with one of your
@@ -45,7 +43,6 @@
                        href="http://openid.net/get/">how to get an OpenID enabled account</a>.</p>
          </noscript>
 
-         #{/form}
 
          #{if flash.error}
          <div class="errorbox">
@@ -54,26 +51,46 @@
          </div>
          #{/if}
       </fieldset>
+      #{/form}
    </section>
 </section>
 
-<section id="recents">
+<section id="recents"></section>
+<section id="populars"></section>
 
-</section>
-
-<section id="populars">
-
+<section class="connected" id="add-liked">
+   #{form @Reco.addLiked(), ,id:'add-liked-form'}
+   <fieldset>
+      <legend>Add stuff you want to share :</legend>
+      <div>
+         <label for="add-liked-input-name">Title : </label>
+         <input type="text" id="add-liked-input-name" name="add-liked-input-name"
+                value="${flash.addLikedName}" required/>
+         <label for="add-liked-input-description">Description : </label>
+         <input type="text" id="add-liked-input-description" name="add-liked-input-description"
+                        value="${flash.addLikeddescription}" required/>
+         <button id="add-liked-button" type="submit" name="submit">Add</button>
+      </div>
+      #{if flash.addLikedError}
+      <div class="errorbox">
+         <h2>Erreur</h2>
+         ${flash.addLikedError}
+      </div>
+      #{/if}
+   </fieldset>
+   #{/form}
 </section>
 
 
 <script type="text/javascript">
-   require(["jquery", "widgets/likedlist", "openid-jquery", "functional"], function($, LikedList) {
+   require(["jquery", "widgets/likedlist", "widgets/likedaddbox", "openid-jquery"], function($, LikedList, LikedAddBox) {
 
       var withConnectedUser = function (username) {
          $('#username-welcome').html(username);
          $('.not-connected').hide();
          $('.connected').fadeIn("fast");
-         LikedList.Instance('recommendations', '@{Application.recommend()}', {limit:10});
+         LikedList.Instance('recommendations', '@{Reco.recommend()}', {limit:10});
+         LikedAddBox.Instance('add-liked', '@{Reco.addLiked()}');
       };
 
       var withoutConnectedUser = function () {
@@ -96,7 +113,7 @@
 
          initPage();
 
-         $('#submit-button').click(function(e) {
+         $('#search-button').click(function(e) {
             e.preventDefault();
             var searchText = $('#search-input').val();
             LikedList.Instance('search-results', '@{Application.search()}', {limit:10,text: searchText});

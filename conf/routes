@@ -11,14 +11,11 @@ GET      /favicon.ico                           404
 # Map static resources from the /app/public folder to the /public path
 GET      /public/                               staticDir:public
 
-POST	   /ajaxlogin								      Security.ajaxlogin
 GET		/user/name								      Security.userName
 
-POST	   /user/create							      Application.handleSignup
+POST     /reco/liked                            Application.addLiked
 
 # Secure routes
-GET		/login			                        Secure.login
-POST     /login                                 Secure.authenticate
 GET      /logout         						      Security.logout
 
 # Catch all
