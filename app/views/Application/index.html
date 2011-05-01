@@ -67,30 +67,13 @@
 
 
 <script type="text/javascript">
-   require(["jquery", "widgets/likedlist", "openid-jquery"], function($, LikedList) {
-      var onSuccessSearch = function (resultList) {
-         $('#result').html();
-         $('#search-results').show();
-      }
-
-      var doSearch = function () {
-         var searchText = $('#search-input').val();
-         $.ajax({
-            url: '@{Application.search()}',
-            success: onSuccessSearch,
-            data: ({'text' : searchText}),
-            type: "GET",
-            error: function() {
-               $('#search-results').html("<p class='error'>Sorry, Something bad happened. Please try another search</p>");
-            }
-         });
-      }
+   require(["jquery", "widgets/likedlist", "openid-jquery", "functional"], function($, LikedList) {
 
       var withConnectedUser = function (username) {
          $('#username-welcome').html(username);
          $('.not-connected').hide();
          $('.connected').fadeIn("fast");
-         LikedList.Instance('recommendations', '@{Application.recommend()}', 10);
+         LikedList.Instance('recommendations', '@{Application.recommend()}', {limit:10});
       };
 
       var withoutConnectedUser = function () {
@@ -115,11 +98,12 @@
 
          $('#submit-button').click(function(e) {
             e.preventDefault();
-            doSearch();
+            var searchText = $('#search-input').val();
+            LikedList.Instance('search-results', '@{Application.search()}', {limit:10,text: searchText});
          });
 
-         LikedList.Instance('recents', '@{Application.lastAdded()}', 10);
-         LikedList.Instance('populars', '@{Application.mostLiked()}', 10);
+         LikedList.Instance('recents', '@{Application.lastAdded()}', {limit:10});
+         LikedList.Instance('populars', '@{Application.mostLiked()}', {limit:10});
 
       });
    });
