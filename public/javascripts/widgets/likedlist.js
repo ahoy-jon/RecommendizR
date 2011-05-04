@@ -25,20 +25,11 @@ require.def("widgets/likedlist", ["jquery"], function($) {
          $('#' + containerId).html('<ul id="' + containerId + '-list"></ul>');
          $(likedList).each(function(i, el) {
             var likeOrUnlikeButton = "";
-            $.ajax({
-               url: isLikedResource,
-               data: {likedId:el.id},
-               success: function(liked) {
-                  if (liked == 'true') {
-                     likeOrUnlikeButton = " <a id='" + containerId + "-li-a-" + el.id + "' href='#'>unlike</a>";
-                  } else {
-                     likeOrUnlikeButton = " <a id='" + containerId + "-li-a-" + el.id + "' href='#'>like</a>";
-                  }
-               },
-               error: function() {
-               },
-               async:false
-            });
+            if (el.liked==true){
+                likeOrUnlikeButton = " <a id='" + containerId + "-li-a-" + el.id + "' href='#'>unlike</a>";
+            }else if(el.liked==false){
+                likeOrUnlikeButton = " <a id='" + containerId + "-li-a-" + el.id + "' href='#'>like</a>";
+            }
             $('#' + containerId + "-li-a-" + el.id).live('click', switchlike.curry(el.id, switchLikeResource));
             $('#' + containerId + '-list').append('<li id="' + containerId + '-li-' + el.id + '"><a href="#" alt="' + el.description + '">' + el.name + '</a> ' + likeOrUnlikeButton + '</li>');
          });
