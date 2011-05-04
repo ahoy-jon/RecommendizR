@@ -25,7 +25,7 @@ public class Security extends Secure.Security {
 
          String userEmail = verifiedUser.extensions.get("email");
          if (userEmail == null) {
-            final String errorMessage = "L'identification de votre compte sur le site des Zindeps s'effectue avec votre email." +
+            final String errorMessage = "L'identification de votre compte sur le site Recommandizer s'effectue avec votre email." +
                     " Vous devez authoriser le domaine recommendizr.com à accéder à votre email pour vous authentifier.";
             flash.error(errorMessage);
             Logger.info(errorMessage);
