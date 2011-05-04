@@ -52,8 +52,7 @@ public class Secure extends Controller {
       if (isConnected()) {
          redirectToOriginalURL();
       } else {
-         flash.keep("url");
-         render();
+         forbidden();
       }
    }
 
