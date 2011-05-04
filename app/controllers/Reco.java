@@ -1,12 +1,8 @@
 package controllers;
 
-import static Utils.Redis.newConnection;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import models.Category;
+import models.Liked;
+import models.User;
 import org.apache.mahout.cf.taste.common.TasteException;
 import org.apache.mahout.cf.taste.eval.RecommenderBuilder;
 import org.apache.mahout.cf.taste.impl.common.FastByIDMap;
@@ -15,15 +11,19 @@ import org.apache.mahout.cf.taste.model.DataModel;
 import org.apache.mahout.cf.taste.model.PreferenceArray;
 import org.apache.mahout.cf.taste.recommender.RecommendedItem;
 import org.apache.mahout.cf.taste.recommender.Recommender;
-
-import models.Category;
-import models.Liked;
-import models.User;
 import play.mvc.Controller;
 import play.mvc.With;
+import redis.clients.jedis.Connection;
 import redis.clients.jedis.Jedis;
 import services.CrossingBooleanRecommenderBuilder;
 import services.CrossingDataModelBuilder;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static Utils.Redis.newConnection;
 
 @With(Secure.class)
 public class Reco extends Controller {
@@ -62,9 +62,7 @@ public class Reco extends Controller {
 
    public static boolean isLiked(Long likedId) {
       User user = Security.connectedUser();
-      Jedis jedis = newConnection();
-      boolean r = null != jedis.hget("u" + user.id, "like:l" + likedId);
-      return r;
+      return Liked.isLiked(likedId,user,newConnection());
    }
 
    public static void recommend(int limit) throws TasteException {
@@ -74,14 +72,15 @@ public class Reco extends Controller {
       FastByIDMap<PreferenceArray> usersData = usersData(jedis, null, trainUsersLimit);
       usersData.put(user.id, getPreferences(jedis, trainUsersLimit++, user.id));
       List<RecommendedItem> recommendedItems = _internalRecommend(limit, user, usersData);
-      Set<Liked> likedList = new HashSet<Liked>(recommendedItems.size());
+      Set<Liked> likedSet = new HashSet<Liked>(recommendedItems.size());
       for (RecommendedItem item : recommendedItems) {
-         Liked liked =findLiked(item.getItemID());
-         if(liked!=null){
-            likedList.add(liked);
+         Liked liked = findLiked(item.getItemID());
+         if (liked != null) {
+            likedSet.add(liked);
          }
       }
-      renderJSON(likedList);
+      Liked.fill(likedSet, user, jedis);
+      renderJSON(likedSet);
    }
 
    public static List<RecommendedItem> _internalRecommend(int howMany, User user, FastByIDMap<PreferenceArray> usersData) throws TasteException {
