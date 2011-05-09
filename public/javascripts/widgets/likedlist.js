@@ -37,8 +37,8 @@ require.def("widgets/likedlist", ["jquery"], function($) {
       }
    }
 
-   var onError = function(containerId) {
-      $('#' + containerId).html('<p>error</p>');
+   var onError = function(containerId, xhr) {
+      $('#' + containerId).html('<p>'+xhr.responseText+'</p>');
    }
 
    return {

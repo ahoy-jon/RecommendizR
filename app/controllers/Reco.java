@@ -1,8 +1,10 @@
 package controllers;
 
+import services.SearchService;
 import models.Category;
 import models.Liked;
 import models.User;
+
 import org.apache.mahout.cf.taste.common.TasteException;
 import org.apache.mahout.cf.taste.eval.RecommenderBuilder;
 import org.apache.mahout.cf.taste.impl.common.FastByIDMap;
@@ -11,13 +13,15 @@ import org.apache.mahout.cf.taste.model.DataModel;
 import org.apache.mahout.cf.taste.model.PreferenceArray;
 import org.apache.mahout.cf.taste.recommender.RecommendedItem;
 import org.apache.mahout.cf.taste.recommender.Recommender;
+
+import play.Logger;
 import play.mvc.Controller;
 import play.mvc.With;
-import redis.clients.jedis.Connection;
 import redis.clients.jedis.Jedis;
 import services.CrossingBooleanRecommenderBuilder;
 import services.CrossingDataModelBuilder;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -57,12 +61,17 @@ public class Reco extends Controller {
    public static void addLiked(Liked liked) {
       liked.save();
       like(liked.id);
+      try {
+         SearchService.addToIndex(liked);
+      } catch (IOException e) {
+         Logger.error(e, e.getMessage());
+      }
       render(liked);
    }
 
    public static boolean isLiked(Long likedId) {
       User user = Security.connectedUser();
-      return Liked.isLiked(likedId,user,newConnection());
+      return Liked.isLiked(likedId, user, newConnection());
    }
 
    public static void recommend(int limit) throws TasteException {
