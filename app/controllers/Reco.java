@@ -46,7 +46,8 @@ public class Reco extends Controller {
    }
 
    private static void doLike(Long likedId, User user, Jedis jedis) {
-      jedis.hincrBy("l" + likedId, "count", 1);
+      String count = String.valueOf(jedis.hincrBy("l" + likedId, "count", 1));
+      managePopularList(likedId, count, jedis);
       jedis.hset("u" + user.id, "like:l" + likedId, String.valueOf(likedId));
       jedis.hset("l" + likedId, "user:u" + user.id, String.valueOf(user.id));
    }
@@ -54,6 +55,36 @@ public class Reco extends Controller {
     private static void doIgnore(Long likedId, User user, Jedis jedis) {
       jedis.hincrBy("l" + likedId, "countIgnore", 1);
       jedis.hset("ignore:u" + user.id, "like:l" + likedId, String.valueOf(likedId));
+    }
+
+   private static void managePopularList(Long likedId, String count, Jedis jedis) {
+      Map<String, String> mostPopulars = jedis.hgetAll("popular");
+      if (mostPopulars == null || mostPopulars.size() < 10) {
+         jedis.hset("popular", String.valueOf(likedId), count);
+      } else {
+         Map.Entry<String, String> smaller = getLessLiked(mostPopulars, jedis);
+         if (getLesserXThanY(smaller.getValue(), count)) {
+            jedis.hdel("popular", smaller.getKey());
+            jedis.hset("popular", String.valueOf(likedId), count);
+         }
+      }
+   }
+
+   private static Map.Entry<String, String> getLessLiked(Map<String, String> mostPopulars, Jedis jedis) {
+      Map.Entry<String, String> lessLiked = null;
+      for (Map.Entry<String, String> entry : mostPopulars.entrySet()) {
+         if (lessLiked == null || getLesserXThanY(entry.getValue(), lessLiked.getValue())) {
+            lessLiked = entry;
+         }
+      }
+      return lessLiked;
+   }
+
+   private static boolean getLesserXThanY(String x, String y) {
+      if (Long.valueOf(x) < Long.valueOf(y)) {
+         return Boolean.TRUE;
+      }
+      return Boolean.FALSE;
    }
 
    public static void unlike(Long likedId) {
