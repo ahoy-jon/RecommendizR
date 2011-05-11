@@ -22,7 +22,10 @@
 
 </section>
 
-<section><h4>Search results :</h4><div id="search-results"></div></section>
+<section><h4>Search results :</h4>
+
+   <div id="search-results"></div>
+</section>
 
 <section>
    <h4>Stuff you should like :</h4>
@@ -60,21 +63,33 @@
    </div>
 </section>
 
-<section><h4>Recent stuff :</h4><div id="recents"></div></section>
-<section><h4>Popular stuff :</h4><div id="populars"></div></section>
+<section><h4>Recent stuff :</h4>
+
+   <div id="recents"></div>
+</section>
+<section><h4>Popular stuff :</h4>
+
+   <div id="populars"></div>
+</section>
 
 <section class="connected" id="add-liked">
    #{form @Reco.addLiked(), ,id:'add-liked-form'}
    <fieldset>
       <legend>Add stuff you want to share :</legend>
       <div>
-         <label for="add-liked-input-name">Title : </label>
-         <input type="text" id="add-liked-input-name" name="add-liked-input-name"
-                value="${flash.addLikedName}" required/>
-         <label for="add-liked-input-description">Description : </label>
-         <input type="text" id="add-liked-input-description" name="add-liked-input-description"
-                value="${flash.addLikeddescription}" required/>
-         <button id="add-liked-button" type="submit" name="submit">Add</button>
+         <p>
+            <label for="add-liked-input-name">Title : </label>
+            <input type="text" id="add-liked-input-name" name="add-liked-input-name"
+                   value="${flash.addLikedName}" required/>
+         </p>
+
+         <p>
+            <label for="add-liked-input-description">Description : </label>
+            <textarea type="text" id="add-liked-input-description" name="add-liked-input-description"
+                      value="${flash.addLikeddescription}" required> </textarea>
+
+         <p>
+            <button id="add-liked-button" type="submit" name="submit">Add</button>
       </div>
       #{if flash.addLikedError}
       <div class="errorbox">

@@ -1,0 +1,13 @@
+form label {
+    display: block;
+    font-weight: bold;
+    padding-top: 10px;
+}
+
+form textarea {
+   width: 600px;
+}
+
+form input {
+   width: 300px;
+}
