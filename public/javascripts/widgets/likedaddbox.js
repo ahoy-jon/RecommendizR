@@ -1,14 +1,10 @@
-require.def("widgets/likedaddbox", ["jquery"], function($) {
-   var onSuccess = function(containerId){
-
-   }
-
-   var onError = function(containerId){
-        $('#'+containerId).html('<p>error</p>');
-   }
-
+require.def("widgets/likedaddbox", ["jquery", "utils"], function($, Utils) {
    return {
       "Instance": function (containerId, resource) {
+
+         var self = this;
+         self.onLikedAdded = new Utils.Event();
+
          $('#' + containerId + '-button').click(function(e) {
             e.preventDefault();
             var name = $('#' + containerId + '-input-name').val();
@@ -21,6 +17,16 @@ require.def("widgets/likedaddbox", ["jquery"], function($) {
                type:'POST'
             });
          });
+
+         var onSuccess = function(containerId) {
+            self.onLikedAdded.execute();
+            $('#' + containerId + '-input-name').val("");
+            $('#' + containerId + '-input-description').val("");
+         }
+
+         var onError = function(containerId) {
+            $('#' + containerId).html('<p>error</p>');
+         }
       }
    };
 

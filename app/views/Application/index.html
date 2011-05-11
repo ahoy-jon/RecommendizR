@@ -41,15 +41,9 @@
          <fieldset>
 
             <a class="google openid_large_btn" href="javascript:openid.signin('google');"
-               title="se connecter avec Google">google</a>
-            <a class="yahoo openid_large_btn" href="javascript:openid.signin('yahoo');" title="se connecter avec Yahoo">yahoo</a>
-
-            <noscript>
-               <p>OpenID is service that allows you to log-on to many different websites using a single indentity.
-                  Find out <a href="http://openid.net/what/">more about OpenID</a> and <a
-                          href="http://openid.net/get/">how to get an OpenID enabled account</a>.</p>
-            </noscript>
-
+               title="Connect with Google">google</a>
+            <a class="yahoo openid_large_btn" href="javascript:openid.signin('yahoo');"
+               title="Connect with Yahoo">yahoo</a>
 
             #{if flash.error}
             <div class="errorbox">
@@ -105,33 +99,7 @@
 <script type="text/javascript">
    require(["jquery", "widgets/likedlist", "widgets/likedaddbox", "openid-jquery"], function($, LikedList, LikedAddBox) {
 
-      var withConnectedUser = function (username) {
-         $('#username-welcome').html(username);
-         $('.not-connected').hide();
-         $('.connected').fadeIn("fast");
-         LikedList.Instance('recommendations', '@{Reco.recommend()}', {limit:10}, '@{Reco.isLiked()}', '@{Reco.switchlike()}');
-         LikedAddBox.Instance('add-liked', '@{Reco.addLiked()}');
-      };
-
-      var withoutConnectedUser = function () {
-         $('.connected').hide();
-         $('.not-connected').fadeIn("fast");
-      };
-
-      var initPage = function() {
-         $.ajax({
-            url: '@{Security.userName()}',
-            success: withConnectedUser,
-            error: withoutConnectedUser
-         });
-
-         openid.init('openid_identifier');
-         openid.setDemoMode(false);
-      };
-
       $(document).ready(function() {
-
-         initPage();
 
          $('#search-button').click(function(e) {
             e.preventDefault();
@@ -139,9 +107,36 @@
             LikedList.Instance('search-results', '@{Application.search()}', {limit:10,text: searchText}, '@{Reco.isLiked()}', '@{Reco.switchlike()}');
          });
 
-         LikedList.Instance('recents', '@{Application.lastAdded()}', {limit:10}, '@{Reco.isLiked()}', '@{Reco.switchlike()}');
-         LikedList.Instance('populars', '@{Application.mostLiked()}', {limit:10}, '@{Reco.isLiked()}', '@{Reco.switchlike()}');
+         var recentsLiked = new LikedList.Instance('recents', '@{Application.lastAdded()}', {limit:10}, '@{Reco.isLiked()}', '@{Reco.switchlike()}');
+         var popularsLiked = new LikedList.Instance('populars', '@{Application.mostLiked()}', {limit:10}, '@{Reco.isLiked()}', '@{Reco.switchlike()}');
 
+         var withConnectedUser = function (username) {
+            $('#username-welcome').html(username);
+            $('.not-connected').hide();
+            $('.connected').fadeIn("fast");
+            LikedList.Instance('recommendations', '@{Reco.recommend()}', {limit:10}, '@{Reco.isLiked()}', '@{Reco.switchlike()}');
+            var likedAddBox = new LikedAddBox.Instance('add-liked', '@{Reco.addLiked()}');
+            likedAddBox.onLikedAdded.add(recentsLiked.refresh);
+            likedAddBox.onLikedAdded.add(popularsLiked.refresh);
+         };
+
+         var withoutConnectedUser = function () {
+            $('.connected').hide();
+            $('.not-connected').fadeIn("fast");
+         };
+
+         var initPage = function() {
+            $.ajax({
+               url: '@{Security.userName()}',
+               success: withConnectedUser,
+               error: withoutConnectedUser
+            });
+
+            openid.init('openid_identifier');
+            openid.setDemoMode(false);
+         };
+
+         initPage();
       });
    });
 </script>

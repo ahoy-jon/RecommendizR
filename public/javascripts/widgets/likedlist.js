@@ -25,10 +25,10 @@ require.def("widgets/likedlist", ["jquery"], function($) {
          $('#' + containerId).html('<ul id="' + containerId + '-list"></ul>');
          $(likedList).each(function(i, el) {
             var likeOrUnlikeButton = "";
-            if (el.liked==true){
-                likeOrUnlikeButton = " <a id='" + containerId + "-li-a-" + el.id + "' href='#'>unlike</a>";
-            }else if(el.liked==false){
-                likeOrUnlikeButton = " <a id='" + containerId + "-li-a-" + el.id + "' href='#'>like</a>";
+            if (el.liked == true) {
+               likeOrUnlikeButton = " <a id='" + containerId + "-li-a-" + el.id + "' href='#'>unlike</a>";
+            } else if (el.liked == false) {
+               likeOrUnlikeButton = " <a id='" + containerId + "-li-a-" + el.id + "' href='#'>like</a>";
             }
             $('#' + containerId + "-li-a-" + el.id).live('click', switchlike.curry(el.id, switchLikeResource));
             $('#' + containerId + '-list').append('<li id="' + containerId + '-li-' + el.id + '"><a href="#" alt="' + el.description + '">' + el.name + '</a> ' + likeOrUnlikeButton + '</li>');
@@ -38,17 +38,23 @@ require.def("widgets/likedlist", ["jquery"], function($) {
    }
 
    var onError = function(containerId, xhr) {
-      $('#' + containerId).html('<p>'+xhr.responseText+'</p>');
+      $('#' + containerId).html('<p>' + xhr.responseText + '</p>');
    }
 
    return {
       "Instance": function (containerId, resource, data, isLikedResource, switchlikeResource) {
-         $.ajax({
-            url: resource,
-            data: data,
-            success: onSuccess.curry(containerId, isLikedResource, switchlikeResource),
-            error: onError.curry(containerId)
-         });
+         var self = this;
+
+         self.refresh = function() {
+            $.ajax({
+               url: resource,
+               data: data,
+               success: onSuccess.curry(containerId, isLikedResource, switchlikeResource),
+               error: onError.curry(containerId)
+            });
+         }
+
+         self.refresh();
       }
    };
 
