@@ -85,12 +85,9 @@
          <p>
             <button id="add-liked-button" type="submit" name="submit">Add</button>
       </div>
-      #{if flash.addLikedError}
-      <div class="errorbox">
-         <h2>Erreur</h2>
-         ${flash.addLikedError}
+      <div id="add-liked-error" style="display: none;" class="errorbox">
+         Sorry, I can't add that.
       </div>
-      #{/if}
    </fieldset>
    #{/form}
 </section>

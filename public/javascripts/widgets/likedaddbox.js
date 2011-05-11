@@ -22,10 +22,12 @@ require.def("widgets/likedaddbox", ["jquery", "utils"], function($, Utils) {
             self.onLikedAdded.execute();
             $('#' + containerId + '-input-name').val("");
             $('#' + containerId + '-input-description').val("");
+            $('#' + containerId+"-error").hide();
          }
 
-         var onError = function(containerId) {
-            $('#' + containerId).html('<p>error</p>');
+         var onError = function(containerId, xhr) {
+            $('#' + containerId+"-error").html($('#' + containerId+"-error").html()+xhr.responseText);
+            $('#' + containerId+"-error").show();
          }
       }
    };
