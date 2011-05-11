@@ -5,6 +5,7 @@ import models.Category;
 import models.Liked;
 import models.User;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.mahout.cf.taste.common.TasteException;
 import org.apache.mahout.cf.taste.eval.RecommenderBuilder;
 import org.apache.mahout.cf.taste.impl.common.FastByIDMap;
@@ -35,6 +36,10 @@ public class Reco extends Controller {
    public static void like(Long likedId) {
       User user = Security.connectedUser();
       Jedis jedis = newConnection();
+      doLike(likedId, user, jedis);
+   }
+
+   private static void doLike(Long likedId, User user, Jedis jedis) {
       jedis.hincrBy("l" + likedId, "count", 1);
       jedis.hset("u" + user.id, "like:l" + likedId, String.valueOf(likedId));
       jedis.hset("l" + likedId, "user:u" + user.id, String.valueOf(user.id));
@@ -59,14 +64,19 @@ public class Reco extends Controller {
    }
 
    public static void addLiked(Liked liked) {
+      if (StringUtils.isEmpty(liked.name) || StringUtils.isEmpty(liked.description)) {
+         badRequest();
+      }
       liked.save();
-      like(liked.id);
+      User user = Security.connectedUser();
+      Jedis jedis = newConnection();
+      doLike(liked.id, user, jedis);
       try {
          SearchService.addToIndex(liked);
       } catch (IOException e) {
          Logger.error(e, e.getMessage());
       }
-      render(liked);
+      renderJSON(liked);
    }
 
    public static boolean isLiked(Long likedId) {
