@@ -57,13 +57,12 @@
    </div>
 </section>
 
-<section><h4>Recent stuff :</h4>
-
-   <div id="recents"></div>
-</section>
 <section><h4>Popular stuff :</h4>
-
    <div id="populars"></div>
+</section>
+
+<section><h4>Recent stuff :</h4>
+   <div id="recents"></div>
 </section>
 
 <section class="connected" id="add-liked">
@@ -101,17 +100,17 @@
          $('#search-button').click(function(e) {
             e.preventDefault();
             var searchText = $('#search-input').val();
-            LikedList.Instance('search-results', '@{Application.search()}', {limit:10,text: searchText}, '@{Reco.isLiked()}', '@{Reco.switchlike()}', '@{Reco.ignore()}');
+            LikedList.Instance('search-results', '@{Application.search()}', {limit:10,text: searchText}, '@{Reco.isLiked()}', '@{Reco.switchLike()}', '@{Reco.switchIgnore()}');
          });
 
-         var recentsLiked = new LikedList.Instance('recents', '@{Application.lastAdded()}', {limit:10}, '@{Reco.isLiked()}', '@{Reco.switchlike()}', '@{Reco.ignore()}');
-         var popularsLiked = new LikedList.Instance('populars', '@{Application.mostLiked()}', {limit:10}, '@{Reco.isLiked()}', '@{Reco.switchlike()}', '@{Reco.ignore()}');
+         var recentsLiked = new LikedList.Instance('recents', '@{Application.lastAdded()}', {limit:10}, '@{Reco.isLiked()}', '@{Reco.switchLike()}', '@{Reco.switchIgnore()}');
+         var popularsLiked = new LikedList.Instance('populars', '@{Application.mostLiked()}', {limit:10}, '@{Reco.isLiked()}', '@{Reco.switchLike()}', '@{Reco.switchIgnore()}');
 
          var withConnectedUser = function (username) {
             $('#username-welcome').html(username);
             $('.not-connected').hide();
             $('.connected').fadeIn("fast");
-            LikedList.Instance('recommendations', '@{Reco.recommend()}', {limit:10}, '@{Reco.isLiked()}', '@{Reco.switchlike()}', '@{Reco.ignore()}');
+            LikedList.Instance('recommendations', '@{Reco.recommend()}', {limit:10}, '@{Reco.isLiked()}', '@{Reco.switchLike()}', '@{Reco.switchIgnore()}');
             var likedAddBox = new LikedAddBox.Instance('add-liked', '@{Reco.addLiked()}');
             likedAddBox.onLikedAdded.add(recentsLiked.refresh);
             likedAddBox.onLikedAdded.add(popularsLiked.refresh);

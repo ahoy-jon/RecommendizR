@@ -7,6 +7,8 @@ import redis.clients.jedis.Jedis;
 
 import javax.persistence.Entity;
 import javax.persistence.Transient;
+
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -15,18 +17,15 @@ import java.util.Set;
 @Entity
 public class Liked extends Model {
 
-   public Category category;
    @Required
    @MinSize(3)
    public String name;
    @Required
    public String description;
-   @MinSize(4)
-   public String usefullFor;
-   @MinSize(4)
-   public String usefullWhen;
    @Transient
    public Boolean liked;
+   @Transient
+   public Boolean ignored;
 
    public String toString() {
       return name;
@@ -38,12 +37,18 @@ public class Liked extends Model {
       return r;
    }
 
-   public static void fill(Set<Liked> likedList, User user, Jedis jedis) {
+   public static Collection<Liked> fill(Collection<Liked> likedList, User user, Jedis jedis) {
       if (user != null) {
          for (Liked item : likedList) {
             item.liked = isLiked(item.getId(), user, jedis);
+            item.ignored = isIgnored(item.getId(), user, jedis);
          }
       }
+      return likedList;
+   }
 
+   public static boolean isIgnored(Long likedId, User user, Jedis jedis) {
+      boolean r = null != jedis.hget("ignore:u" + user.id, "like:l" + likedId);
+      return r;
    }
 }

@@ -47,10 +47,8 @@ public class Application extends Controller {
    public static void lastAdded(int howMany) {
       User user = Security.connectedUser();
       Jedis jedis = newConnection();
-      Set<Liked> likedSet = Sets.newHashSet(Liked.<Liked>findAll());
-      removeIgnored(likedSet, user, jedis);
-      Liked.fill(likedSet, user, jedis);
-      renderJSON(likedSet);
+      Collection<Liked> list = likedList(user, jedis, "recents");
+      renderJSON(list);
    }
 
    static <T extends Collection<Liked>> T removeIgnored(T likedCol, User user, Jedis jedis) {
@@ -71,10 +69,14 @@ public class Application extends Controller {
    public static void mostLiked(int howMany) {
       User user = Security.connectedUser();
       Jedis jedis = newConnection();
-      Map<String, String> mostPopulars = jedis.hgetAll("popular");
-      if (mostPopulars == null || mostPopulars.size() == 0) {
-         renderJSON(new ArrayList<Liked>());
+      Collection<Liked> list = likedList(user, jedis, "popular");
+      renderJSON(list);
+   }
 
+   static Collection<Liked> likedList(User user, Jedis jedis, String listName) {
+      Map<String, String> mostPopulars = jedis.hgetAll(listName);
+      if (mostPopulars == null || mostPopulars.size() == 0) {
+         return new ArrayList<Liked>();
       } else {
          Query query = JPA.em().createQuery("from Liked where id in (:list)");
          List<Long> ids = new ArrayList<Long>();
@@ -83,11 +85,10 @@ public class Application extends Controller {
             ids.add(Long.valueOf(s));
          }
          query.setParameter("list", ids);
-         Set<Liked> likedSet = Sets.newHashSet(query
-                 .setMaxResults(10).getResultList());
+         Collection<Liked> likedSet = Sets.newHashSet(query.getResultList());
          removeIgnored(likedSet, user, jedis);
-         Liked.fill(likedSet, Security.connectedUser(), newConnection());
-         renderJSON(likedSet);
+         Liked.fill(likedSet, user, jedis);
+         return likedSet;
       }
    }
 }
