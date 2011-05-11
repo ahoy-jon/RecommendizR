@@ -25,6 +25,15 @@ public class Application extends Controller {
       render();
    }
 
+   public static void home() {
+      render();
+   }
+
+   public static void liked(Long id) {
+      Liked liked = findLiked(id);
+      render(liked);
+   }
+
    public static void search(String text) {
       Set<Liked> likedSet = null;
       try {
@@ -90,5 +99,9 @@ public class Application extends Controller {
          Liked.fill(likedSet, user, jedis);
          return likedSet;
       }
+   }
+
+   static Liked findLiked(long itemID) {
+      return Liked.findById(itemID);
    }
 }

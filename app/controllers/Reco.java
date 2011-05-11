@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static Utils.Redis.newConnection;
+import static controllers.Application.findLiked;
 
 @With(Secure.class)
 public class Reco extends Controller {
@@ -202,10 +203,6 @@ public class Reco extends Controller {
       DataModel trainingModel = new CrossingDataModelBuilder().buildDataModel(usersData);
       Recommender recommender = recommenderBuilder.buildRecommender(trainingModel);
       return recommender.recommend(user.id, howMany, null);
-   }
-
-   static Liked findLiked(long itemID) {
-      return Liked.findById(itemID);
    }
 
    private static FastByIDMap<PreferenceArray> usersData(Jedis jedis, int limit, Set<String> ignoredKeys) {

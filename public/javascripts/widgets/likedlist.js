@@ -49,7 +49,7 @@ require.def("widgets/likedlist", ["jquery"], function($) {
             }
             $('#' + containerId + "-list-a-" + el.id).live('click', switchlike.curry(el.id, switchLikeResource, containerId));
             $('#' + containerId + "-list-ignore-" + el.id).live('click', switchIgnore.curry(el.id, switchIgnoreResource, containerId));
-            $('#' + containerId + '-list').append('<li id="' + containerId + '-li-' + el.id + '"><a href="#" alt="' + el.description + '">' + el.name + '</a> '
+            $('#' + containerId + '-list').append('<li id="' + containerId + '-li-' + el.id + '"><a class="histolink" href="#!/liked/'+el.id+'" alt="' + el.description + '">' + el.name + '</a> '
                     + likeOrUnlikeButton
                     + ignoreButton
                     + "</li>");
