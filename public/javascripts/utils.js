@@ -1,4 +1,4 @@
-require.def("utils", ["functional"], function() {
+require.def("utils", ["jquery", "functional"], function($) {
 
    /** Install functional API. */
    Functional.install();
@@ -347,6 +347,16 @@ require.def("utils", ["functional"], function() {
             return "";
          else
             return decodeURIComponent(results[1]);
+      },
+
+      "htmlEncode" : function (value) {
+         return $('<div/>').text(value).html();
+      },
+
+      "htmlDecode" : function (value) {
+         return $('<div/>').html(value).text();
       }
+
+
    };
 });

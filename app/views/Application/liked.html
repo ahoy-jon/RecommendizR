@@ -1,4 +1,14 @@
-<section>
-   <h2>${liked.name}</h2>
-   <p>${liked.description}</p>
+<section id="liked-section" style="display:none;">
+   <h2 id="liked-name">${liked.name}</h2>
+
+   <p id="liked-description">${liked.description}</p>
 </section>
+
+<script type="text/javascript">
+   require(["jquery", "utils"], function($, Utils) {
+      $(document).ready(function() {
+         $('#liked-description').html($('#liked-description').text());
+         $('#liked-section').show();
+      })
+   })
+</script>
