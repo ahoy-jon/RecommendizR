@@ -355,8 +355,11 @@ require.def("utils", ["jquery", "functional"], function($) {
 
       "htmlDecode" : function (value) {
          return $('<div/>').html(value).text();
-      }
+      },
 
+      "escape": function (str) {
+         return str.replace(/([#;&,\.\+\*\~':"\!\^$\[\]\(\)=>\|])/g, "\\$1");
+      }
 
    };
 });
