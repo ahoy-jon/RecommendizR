@@ -1,4 +1,4 @@
-require.def("widgets/likedlist", ["jquery"], function($) {
+require.def("widgets/likedlist", ["jquery", "utils"], function($, Utils) {
 
    var switchlike = function(likedId, switchLikeResource, containerId, e) {
       e.preventDefault();
@@ -49,10 +49,10 @@ require.def("widgets/likedlist", ["jquery"], function($) {
             }
             $('#' + containerId + "-list-a-" + el.id).live('click', switchlike.curry(el.id, switchLikeResource, containerId));
             $('#' + containerId + "-list-ignore-" + el.id).live('click', switchIgnore.curry(el.id, switchIgnoreResource, containerId));
-            $('#' + containerId + '-list').append('<li id="' + containerId + '-li-' + el.id + '"><a class="histolink" href="#!/liked/'+el.id+'" alt="' + el.description + '">' + el.name + '</a> '
-                    + likeOrUnlikeButton
-                    + ignoreButton
-                    + "</li>");
+            var ahref = $('<a>').addClass('histolink').attr('href','#!/liked/'+el.id).attr('alt',el.description).text(el.name);
+            var li = $('<li>').attr('id', containerId + '-li-' + el.id);
+            $(li).append(ahref).append(likeOrUnlikeButton).append(ignoreButton);
+            $('#' + containerId + '-list').append(li);
          });
 
       }
