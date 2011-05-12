@@ -5,7 +5,9 @@ import play.data.validation.Required;
 import play.db.jpa.Model;
 import redis.clients.jedis.Jedis;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Lob;
 import javax.persistence.Transient;
 
 import java.util.Collection;
@@ -21,6 +23,8 @@ public class Liked extends Model {
    @MinSize(3)
    public String name;
    @Required
+   @Lob
+   @Column(name="description", length=5120)
    public String description;
    @Transient
    public Boolean liked;
